@@ -15,6 +15,7 @@ SHOPPING_FILE = os.path.join(BASE_DIR, "shopping.json")
 BADGES_FILE = os.path.join(BASE_DIR, "badges.json")
 LOG_FILE = os.path.join(BASE_DIR, "activity_log.json")
 EXP_DIR = os.path.join(BASE_DIR, "experiments")
+MOOD_HISTORY_FILE = os.path.join(BASE_DIR, "mood_history.json")
 
 # 掛載靜態文件
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
@@ -44,6 +45,13 @@ async def get_mood():
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     return {"mood": "未知", "emoji": "❓"}
+
+@app.get("/api/mood/history")
+async def get_mood_history():
+    if os.path.exists(MOOD_HISTORY_FILE):
+        with open(MOOD_HISTORY_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
 
 @app.get("/api/shopping")
 async def get_shopping():
