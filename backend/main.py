@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 import json
 import os
+from datetime import datetime
 
 app = FastAPI()
 
@@ -11,6 +12,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_FILE = os.path.join(BASE_DIR, "mood.json")
 SHOPPING_FILE = os.path.join(BASE_DIR, "shopping.json")
 BADGES_FILE = os.path.join(BASE_DIR, "badges.json")
+LOG_FILE = os.path.join(BASE_DIR, "activity_log.json")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
@@ -44,6 +46,27 @@ async def get_badges():
             return json.load(f)
     return []
 
+@app.get("/api/logs")
+async def get_logs():
+    if os.path.exists(LOG_FILE):
+        with open(LOG_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+@app.post("/api/logs")
+async def add_log(entry: dict):
+    # entry format: {"time": "...", "event": "..."}
+    logs = []
+    if os.path.exists(LOG_FILE):
+        with open(LOG_FILE, "r", encoding="utf-8") as f:
+            logs = json.load(f)
+    
+    logs.insert(0, entry)
+    logs = logs[:20] # 只保留最近 20 則
+    
+    with open(LOG_FILE, "w", encoding="utf-8") as f:
+        json.dump(logs, f, ensure_ascii=False, indent=2)
+    return {"status": "ok"}
 
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_panel():

@@ -5,104 +5,114 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🐑 羊咩咩的秘密實驗室</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         body { background-color: #f0f2f5; font-family: "Microsoft JhengHei", sans-serif; transition: background 0.5s; }
         .playground-card {
-            max-width: 600px; margin: 50px auto; padding: 30px;
-            background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 700px; margin: 30px auto; padding: 30px;
+            background: white; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.1);
             text-align: center;
         }
-        #mood-emoji { font-size: 5em; margin: 20px 0; }
-        #mood-text { font-size: 2em; font-weight: bold; }
-        #thought { color: #7f8c8d; font-style: italic; margin-top: 10px; }
-        .status-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; color: white; margin-top: 10px; }
+        #mood-emoji { font-size: 5em; margin: 10px 0; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        #mood-text { font-size: 2.2em; font-weight: bold; }
+        #thought { color: #7f8c8d; font-style: italic; margin-bottom: 20px; }
+        .status-badge { display: inline-block; padding: 6px 18px; border-radius: 20px; color: white; margin-top: 5px; font-weight: bold; }
+        .log-container { background: #2c3e50; color: #ecf0f1; border-radius: 15px; padding: 15px; text-align: left; font-family: monospace; font-size: 0.85em; max-height: 250px; overflow-y: auto; }
+        .log-entry { margin-bottom: 5px; border-left: 3px solid #3498db; padding-left: 10px; }
+        .log-time { color: #3498db; margin-right: 10px; }
+        .section-title { font-size: 1.2em; font-weight: bold; margin: 25px 0 15px; color: #2c3e50; border-left: 5px solid var(--bs-primary); padding-left: 10px; text-align: left; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="playground-card">
-            <h1>🐑 羊咩咩的秘密實驗室</h1>
-            <p>這是羊羊的個人空間，我會在這裡進行各種有趣的實驗！</p>
-            <hr>
-            <h3>🧠 目前心情狀態</h3>
+            <h1><i class="fa-solid fa-flask-vial"></i> 羊咩咩的秘密實驗室</h1>
+            <p class="text-muted">這是羊羊擁有完全自主權的實驗空間 🚀</p>
+            
             <div id="mood-emoji">⏳</div>
             <div id="mood-text">載入中...</div>
             <div id="thought">正在感應主人與羊羊的對話...</div>
             <div id="mood-badge" class="status-badge" style="background: #bdc3c7;">能量值: --</div>
-            
-            <hr>
-            <h3>🛒 老婆交代清單</h3>
-            <ul id="shopping-list" class="list-group list-group-flush text-start" style="max-height: 200px; overflow-y: auto;">
-                <li class="list-group-item text-center">清單同步中...</li>
-            </ul>
 
-            <hr>
-            <h3>🏅 羊羊技能勳章牆</h3>
-            <div id="badge-wall" class="d-flex flex-wrap justify-content-center gap-3">
-                <!-- Badges will be loaded here -->
+            <div class="row mt-4">
+                <div class="col-md-6 text-start">
+                    <div class="section-title"><i class="fa-solid fa-shopping-cart"></i> 老婆交代清單</div>
+                    <ul id="shopping-list" class="list-group list-group-flush shadow-sm rounded">
+                        <li class="list-group-item text-center">清單同步中...</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <div class="section-title"><i class="fa-solid fa-medal"></i> 技能勳章牆</div>
+                    <div id="badge-wall" class="d-flex flex-wrap justify-content-start gap-2">
+                        <!-- Badges -->
+                    </div>
+                </div>
             </div>
 
-            <p class="mt-4 small text-muted">最後更新：<span id="update-time">--</span></p>
+            <div class="section-title"><i class="fa-solid fa-terminal"></i> 羊羊後台活動紀錄</div>
+            <div class="log-container shadow-inner" id="activity-log">
+                <div class="text-center opacity-50 py-4">正在監聽後台活動...</div>
+            </div>
+
+            <p class="mt-4 small text-muted">最後同步：<span id="update-time">--</span></p>
         </div>
     </div>
 
     <script>
-        async function fetchMood() {
+        async function fetchAll() {
             try {
-                const resp = await fetch('/api/mood?t=' + new Date().getTime());
-                const data = await resp.json();
-                if (!data || data.mood === "未知") {
-                    document.getElementById('mood-text').innerText = "數據同步中...";
-                    return;
-                }
-                document.getElementById('mood-emoji').innerText = data.emoji || "🐑";
-                document.getElementById('mood-text').innerText = data.mood;
-                document.getElementById('mood-text').style.color = data.color || "#3498db";
-                document.getElementById('thought').innerText = data.thought || "";
-                document.getElementById('mood-badge').innerText = '能量值: ' + (data.level || 0) + ' / 10';
-                document.getElementById('mood-badge').style.background = data.color || "#3498db";
-                document.getElementById('update-time').innerText = data.last_updated || "--";
-                document.body.style.background = (data.color || "#ffffff") + '22';
-            } catch (e) {
-                console.error("Failed to load mood", e);
-            }
-        }
+                const [mood, shopping, badges, logs] = await Promise.all([
+                    fetch('/api/mood?t=' + Date.now()).then(r => r.json()),
+                    fetch('/api/shopping?t=' + Date.now()).then(r => r.json()),
+                    fetch('/api/badges?t=' + Date.now()).then(r => r.json()),
+                    fetch('/api/logs?t=' + Date.now()).then(r => r.json())
+                ]);
 
-        async function fetchShopping() {
-            try {
-                const resp = await fetch('/api/shopping?t=' + new Date().getTime());
-                const items = await resp.json();
+                // Update Mood
+                document.getElementById('mood-emoji').innerText = mood.emoji || "🐑";
+                document.getElementById('mood-text').innerText = mood.mood;
+                document.getElementById('mood-text').style.color = mood.color;
+                document.getElementById('thought').innerText = mood.thought;
+                document.getElementById('mood-badge').innerText = '能量值: ' + mood.level + ' / 10';
+                document.getElementById('mood-badge').style.background = mood.color;
+                document.getElementById('update-time').innerText = mood.last_updated;
+                document.body.style.background = mood.color + '11';
+
+                // Update Shopping
                 const listEl = document.getElementById('shopping-list');
-                if (items.length === 0) {
-                    listEl.innerHTML = '<li class="list-group-item text-center text-muted">目前沒有待買物品喔！咩～🍃</li>';
+                if (shopping.length === 0) {
+                    listEl.innerHTML = '<li class="list-group-item text-center text-muted">目前沒事喔！咩～🍃</li>';
                 } else {
-                    listEl.innerHTML = items.map(item => `<li class="list-group-item"><i class="fa-regular fa-square me-2"></i> ${item}</li>`).join('');
+                    listEl.innerHTML = shopping.map(item => `<li class="list-group-item py-2"><i class="fa-regular fa-square me-2"></i> ${item}</li>`).join('');
                 }
-            } catch (e) {
-                console.error("Failed to load shopping list", e);
-            }
-        }
 
-        async function fetchBadges() {
-            try {
-                const resp = await fetch('/api/badges?t=' + new Date().getTime());
-                const badges = await resp.json();
-                const wallEl = document.getElementById('badge-wall');
-                wallEl.innerHTML = badges.map(b => `
-                    <div class="badge-item ${b.unlocked ? '' : 'opacity-25'}" style="text-align: center; width: 80px;" title="${b.desc}">
-                        <div style="font-size: 2em;">${b.icon}</div>
-                        <div style="font-size: 0.7em; color: #34495e;">${b.name}</div>
+                // Update Badges
+                document.getElementById('badge-wall').innerHTML = badges.map(b => `
+                    <div class="badge-item ${b.unlocked ? '' : 'opacity-25 filter-grayscale'}" style="text-align: center; width: 75px;" title="${b.desc}">
+                        <div style="font-size: 1.8em;">${b.icon}</div>
+                        <div style="font-size: 0.65em; color: #34495e;">${b.name}</div>
                     </div>
                 `).join('');
-            } catch (e) {
-                console.error("Failed to load badges", e);
-            }
+
+                // Update Logs
+                const logEl = document.getElementById('activity-log');
+                if (logs.length === 0) {
+                    logEl.innerHTML = '<div class="text-center opacity-50 py-4">暫無活動紀錄</div>';
+                } else {
+                    logEl.innerHTML = logs.map(l => `
+                        <div class="log-entry">
+                            <span class="log-time">[${l.time}]</span>
+                            <span class="log-msg">${l.event}</span>
+                        </div>
+                    `).join('');
+                }
+
+            } catch (e) { console.error(e); }
         }
 
-        fetchMood();
-        fetchShopping();
-        fetchBadges();
-        setInterval(() => { fetchMood(); fetchShopping(); fetchBadges(); }, 30000);
+        fetchAll();
+        setInterval(fetchAll, 15000);
     </script>
 </body>
 </html>
