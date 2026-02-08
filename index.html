@@ -50,6 +50,11 @@
                 </div>
             </div>
 
+            <div class="section-title"><i class="fa-solid fa-vial"></i> 進行中實驗項目</div>
+            <div id="experiment-list" class="d-flex flex-wrap gap-2 mb-4">
+                <!-- Experiments will be loaded here -->
+            </div>
+
             <div class="section-title"><i class="fa-solid fa-terminal"></i> 羊羊後台活動紀錄</div>
             <div class="log-container shadow-inner" id="activity-log">
                 <div class="text-center opacity-50 py-4">正在監聽後台活動...</div>
@@ -62,11 +67,12 @@
     <script>
         async function fetchAll() {
             try {
-                const [mood, shopping, badges, logs] = await Promise.all([
+                const [mood, shopping, badges, logs, exps] = await Promise.all([
                     fetch('api/mood?t=' + Date.now()).then(r => r.json()),
                     fetch('api/shopping?t=' + Date.now()).then(r => r.json()),
                     fetch('api/badges?t=' + Date.now()).then(r => r.json()),
-                    fetch('api/logs?t=' + Date.now()).then(r => r.json())
+                    fetch('api/logs?t=' + Date.now()).then(r => r.json()),
+                    fetch('api/experiments?t=' + Date.now()).then(r => r.json())
                 ]);
 
                 // Update Mood
@@ -94,6 +100,18 @@
                         <div style="font-size: 0.65em; color: #34495e;">${b.name}</div>
                     </div>
                 `).join('');
+
+                // Update Experiments
+                const expEl = document.getElementById('experiment-list');
+                if (!exps || exps.length === 0) {
+                    expEl.innerHTML = '<div class="text-muted small">暫無進行中實驗。</div>';
+                } else {
+                    expEl.innerHTML = exps.map(name => `
+                        <a href="exp/${name}" class="btn btn-outline-primary btn-sm rounded-pill">
+                            <i class="fa-solid fa-flask"></i> ${name}
+                        </a>
+                    `).join('');
+                }
 
                 // Update Logs
                 const logEl = document.getElementById('activity-log');
