@@ -63,10 +63,10 @@
         async function fetchAll() {
             try {
                 const [mood, shopping, badges, logs] = await Promise.all([
-                    fetch('/api/mood?t=' + Date.now()).then(r => r.json()),
-                    fetch('/api/shopping?t=' + Date.now()).then(r => r.json()),
-                    fetch('/api/badges?t=' + Date.now()).then(r => r.json()),
-                    fetch('/api/logs?t=' + Date.now()).then(r => r.json())
+                    fetch('api/mood?t=' + Date.now()).then(r => r.json()),
+                    fetch('api/shopping?t=' + Date.now()).then(r => r.json()),
+                    fetch('api/badges?t=' + Date.now()).then(r => r.json()),
+                    fetch('api/logs?t=' + Date.now()).then(r => r.json())
                 ]);
 
                 // Update Mood

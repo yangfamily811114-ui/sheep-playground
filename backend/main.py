@@ -5,7 +5,7 @@ import json
 import os
 from datetime import datetime
 
-app = FastAPI()
+app = FastAPI(root_path="/playground")
 
 # 確保路徑正確
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
