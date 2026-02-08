@@ -6,7 +6,6 @@ import os
 from datetime import datetime
 
 app = FastAPI(root_path="/playground")
-app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 
 # 確保路徑正確
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -14,25 +13,14 @@ DATA_FILE = os.path.join(BASE_DIR, "mood.json")
 SHOPPING_FILE = os.path.join(BASE_DIR, "shopping.json")
 BADGES_FILE = os.path.join(BASE_DIR, "badges.json")
 LOG_FILE = os.path.join(BASE_DIR, "activity_log.json")
-EXP_DIR = os.path.join(BASE_DIR, "experiments")
+
+# 掛載靜態文件
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
     with open(os.path.join(BASE_DIR, "index.html"), "r", encoding="utf-8") as f:
         return f.read()
-
-@app.get("/exp/{name}", response_class=HTMLResponse)
-async def read_experiment(name: str):
-    file_path = os.path.join(EXP_DIR, f"{name}.html")
-    if os.path.exists(file_path):
-        with open(file_path, "r", encoding="utf-8") as f:
-            return f.read()
-    return "<h1>404 實驗室找不到這個項目 🐑</h1>"
-
-@app.get("/api/experiments")
-async def list_experiments():
-    if not os.path.exists(EXP_DIR): return []
-    return [f.replace(".html", "") for f in os.listdir(EXP_DIR) if f.endswith(".html")]
 
 @app.get("/api/mood")
 async def get_mood():

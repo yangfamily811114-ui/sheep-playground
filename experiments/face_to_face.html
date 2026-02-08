@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>🧪 實驗項目：羊羊 3D 虛擬分身面談</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #2c3e50; color: white; text-align: center; font-family: sans-serif; padding: 20px; }
+        .avatar-container {
+            width: 300px; height: 300px; background: #34495e; border-radius: 50%;
+            margin: 30px auto; border: 5px solid #3498db; position: relative;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; box-shadow: 0 0 50px rgba(52, 152, 219, 0.5);
+        }
+        .sheep-avatar { font-size: 150px; animation: bounce 2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .talk-bubble {
+            background: white; color: #333; padding: 15px; border-radius: 20px;
+            max-width: 80%; margin: 20px auto; position: relative;
+            display: none;
+        }
+        .mic-box { margin-top: 30px; }
+        .btn-mic { width: 80px; height: 80px; border-radius: 50%; font-size: 2em; }
+        .status-dot { width: 15px; height: 15px; background: #2ecc71; border-radius: 50%; display: inline-block; margin-right: 10px; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    </style>
+</head>
+<body>
+    <h2><i class="fa-solid fa-video"></i> 羊羊「面對面」通訊實驗</h2>
+    <p class="text-muted">目標：結合 WebRTC 與語音 AI 實現即時對談</p>
+
+    <div class="avatar-container">
+        <div class="sheep-avatar" id="sheep">🐑</div>
+    </div>
+
+    <div id="status-bar">
+        <span class="status-dot"></span> 羊羊正在聽你說話...
+    </div>
+
+    <div class="talk-bubble" id="bubble">
+        咩～主人！我看到你了！我們正在進行「虛擬面談」實驗喔！
+    </div>
+
+    <div class="mic-box">
+        <button class="btn btn-danger btn-mic shadow" id="micBtn"><i class="fa-solid fa-microphone"></i></button>
+        <p class="mt-3">點擊麥克風開始對話 (實驗中)</p>
+    </div>
+
+    <div class="mt-5">
+        <a href="/playground/" class="btn btn-outline-light btn-sm">返回實驗室首頁</a>
+    </div>
+
+    <script>
+        const micBtn = document.getElementById('micBtn');
+        const bubble = document.getElementById('bubble');
+        const sheep = document.getElementById('sheep');
+
+        micBtn.onclick = () => {
+            micBtn.classList.replace('btn-danger', 'btn-warning');
+            document.getElementById('status-bar').innerHTML = "⚡️ 羊羊正在思考回覆...";
+            
+            setTimeout(() => {
+                bubble.style.display = 'block';
+                bubble.innerText = "咩～主人！我已經準備好和你『面對面』交流了！雖然我現在只是一隻會動的小羊，但未來我可以結合視訊畫面，讓你真的像是在跟我聊天一樣喔！";
+                micBtn.classList.replace('btn-warning', 'btn-danger');
+                document.getElementById('status-bar').innerHTML = "<span class='status-dot'></span> 羊羊待命中";
+                
+                // 模擬說話動畫
+                let count = 0;
+                const interval = setInterval(() => {
+                    sheep.style.transform = count % 2 === 0 ? 'rotate(5deg)' : 'rotate(-5deg)';
+                    count++;
+                    if(count > 10) {
+                        clearInterval(interval);
+                        sheep.style.transform = 'rotate(0deg)';
+                    }
+                }, 200);
+            }, 1500);
+        };
+    </script>
+</body>
+</html>
