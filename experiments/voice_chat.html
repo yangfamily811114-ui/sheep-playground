@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>🧪 實驗項目：羊羊語音對話</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { padding: 50px; text-align: center; font-family: sans-serif; }
+        .mic-btn { font-size: 3em; border-radius: 50%; width: 100px; height: 100px; }
+    </style>
+</head>
+<body>
+    <h2>🐑 羊羊語音對話測試</h2>
+    <p>這是一個結合 Whisper 與 TTS 的實驗，請按住麥克風說話：</p>
+    <button class="btn btn-danger mic-btn" id="recordBtn">🎤</button>
+    <div id="status" class="mt-4 text-muted">待命...</div>
+    <div id="result" class="mt-4 p-3 border rounded text-start mx-auto" style="max-width: 500px; display:none;">
+        <strong>你說：</strong><span id="userText"></span><br>
+        <strong>羊羊：</strong><span id="botText"></span>
+    </div>
+    <br>
+    <a href="/playground/">回到實驗室首頁</a>
+
+    <script>
+        // Prototype logic: simply log for now, full integration coming soon
+        const btn = document.getElementById('recordBtn');
+        btn.onclick = () => {
+            document.getElementById('status').innerText = "正在模擬錄音與處理... (實驗開發中)";
+            setTimeout(() => {
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('userText').innerText = " 羊羊早安！";
+                document.getElementById('botText').innerText = " 咩～主人早安！今天新竹氣溫只有 11 度，記得穿厚一點喔！";
+                document.getElementById('status').innerText = "完成！";
+            }, 2000);
+        };
+    </script>
+</body>
+</html>
