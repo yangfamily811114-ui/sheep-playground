@@ -10,6 +10,7 @@ app = FastAPI()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_FILE = os.path.join(BASE_DIR, "mood.json")
 SHOPPING_FILE = os.path.join(BASE_DIR, "shopping.json")
+BADGES_FILE = os.path.join(BASE_DIR, "badges.json")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
@@ -35,6 +36,14 @@ async def update_shopping(items: list):
     with open(SHOPPING_FILE, "w", encoding="utf-8") as f:
         json.dump(items, f, ensure_ascii=False, indent=2)
     return {"status": "ok"}
+
+@app.get("/api/badges")
+async def get_badges():
+    if os.path.exists(BADGES_FILE):
+        with open(BADGES_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
 
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_panel():

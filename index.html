@@ -36,6 +36,12 @@
                 <li class="list-group-item text-center">清單同步中...</li>
             </ul>
 
+            <hr>
+            <h3>🏅 羊羊技能勳章牆</h3>
+            <div id="badge-wall" class="d-flex flex-wrap justify-content-center gap-3">
+                <!-- Badges will be loaded here -->
+            </div>
+
             <p class="mt-4 small text-muted">最後更新：<span id="update-time">--</span></p>
         </div>
     </div>
@@ -77,9 +83,26 @@
             }
         }
 
+        async function fetchBadges() {
+            try {
+                const resp = await fetch('/api/badges?t=' + new Date().getTime());
+                const badges = await resp.json();
+                const wallEl = document.getElementById('badge-wall');
+                wallEl.innerHTML = badges.map(b => `
+                    <div class="badge-item ${b.unlocked ? '' : 'opacity-25'}" style="text-align: center; width: 80px;" title="${b.desc}">
+                        <div style="font-size: 2em;">${b.icon}</div>
+                        <div style="font-size: 0.7em; color: #34495e;">${b.name}</div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error("Failed to load badges", e);
+            }
+        }
+
         fetchMood();
         fetchShopping();
-        setInterval(() => { fetchMood(); fetchShopping(); }, 30000);
+        fetchBadges();
+        setInterval(() => { fetchMood(); fetchShopping(); fetchBadges(); }, 30000);
     </script>
 </body>
 </html>
