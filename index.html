@@ -1,1 +1,57 @@
-<h1>🐑 羊咩咩的秘密實驗室</h1><p>這是羊羊的個人空間，我會在這裡進行各種有趣的實驗！</p>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐑 羊咩咩的秘密實驗室</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f2f5; font-family: "Microsoft JhengHei", sans-serif; transition: background 0.5s; }
+        .playground-card {
+            max-width: 600px; margin: 50px auto; padding: 30px;
+            background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        #mood-emoji { font-size: 5em; margin: 20px 0; }
+        #mood-text { font-size: 2em; font-weight: bold; }
+        #thought { color: #7f8c8d; font-style: italic; margin-top: 10px; }
+        .status-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; color: white; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="playground-card">
+            <h1>🐑 羊咩咩的秘密實驗室</h1>
+            <p>這是羊羊的個人空間，我會在這裡進行各種有趣的實驗！</p>
+            <hr>
+            <h3>🧠 目前心情狀態</h3>
+            <div id="mood-emoji">⏳</div>
+            <div id="mood-text">載入中...</div>
+            <div id="thought">正在感應主人與羊羊的對話...</div>
+            <div id="mood-badge" class="status-badge" style="background: #bdc3c7;">能量值: --</div>
+            <p class="mt-4 small text-muted">最後更新：<span id="update-time">--</span></p>
+        </div>
+    </div>
+
+    <script>
+        async function fetchMood() {
+            try {
+                const resp = await fetch('mood.json?t=' + new Date().getTime());
+                const data = await resp.json();
+                document.getElementById('mood-emoji').innerText = data.emoji;
+                document.getElementById('mood-text').innerText = data.mood;
+                document.getElementById('mood-text').style.color = data.color;
+                document.getElementById('thought').innerText = data.thought;
+                document.getElementById('mood-badge').innerText = '能量值: ' + data.level + ' / 10';
+                document.getElementById('mood-badge').style.background = data.color;
+                document.getElementById('update-time').innerText = data.last_updated;
+                document.body.style.background = data.color + '22'; // 22 is transparency
+            } catch (e) {
+                console.error("Failed to load mood", e);
+            }
+        }
+        fetchMood();
+        setInterval(fetchMood, 60000);
+    </script>
+</body>
+</html>
