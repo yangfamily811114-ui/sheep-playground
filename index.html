@@ -36,22 +36,28 @@
     <script>
         async function fetchMood() {
             try {
-                const resp = await fetch('mood.json?t=' + new Date().getTime());
+                // 改用後端 API 路徑
+                const resp = await fetch('/api/mood?t=' + new Date().getTime());
                 const data = await resp.json();
-                document.getElementById('mood-emoji').innerText = data.emoji;
+                if (!data || data.mood === "未知") {
+                    document.getElementById('mood-text').innerText = "數據同步中...";
+                    return;
+                }
+                document.getElementById('mood-emoji').innerText = data.emoji || "🐑";
                 document.getElementById('mood-text').innerText = data.mood;
-                document.getElementById('mood-text').style.color = data.color;
-                document.getElementById('thought').innerText = data.thought;
-                document.getElementById('mood-badge').innerText = '能量值: ' + data.level + ' / 10';
-                document.getElementById('mood-badge').style.background = data.color;
-                document.getElementById('update-time').innerText = data.last_updated;
-                document.body.style.background = data.color + '22'; // 22 is transparency
+                document.getElementById('mood-text').style.color = data.color || "#3498db";
+                document.getElementById('thought').innerText = data.thought || "";
+                document.getElementById('mood-badge').innerText = '能量值: ' + (data.level || 0) + ' / 10';
+                document.getElementById('mood-badge').style.background = data.color || "#3498db";
+                document.getElementById('update-time').innerText = data.last_updated || "--";
+                document.body.style.background = (data.color || "#ffffff") + '22';
             } catch (e) {
                 console.error("Failed to load mood", e);
+                document.getElementById('mood-text').innerText = "連線失敗";
             }
         }
         fetchMood();
-        setInterval(fetchMood, 60000);
+        setInterval(fetchMood, 30000); // 縮短為 30 秒更新一次
     </script>
 </body>
 </html>
