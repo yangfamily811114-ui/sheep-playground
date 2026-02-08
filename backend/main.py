@@ -6,6 +6,7 @@ import os
 from datetime import datetime
 
 app = FastAPI(root_path="/playground")
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 
 # 確保路徑正確
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
