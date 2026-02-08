@@ -9,6 +9,7 @@ app = FastAPI()
 # 確保路徑正確
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_FILE = os.path.join(BASE_DIR, "mood.json")
+SHOPPING_FILE = os.path.join(BASE_DIR, "shopping.json")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
@@ -21,6 +22,19 @@ async def get_mood():
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     return {"mood": "未知", "emoji": "❓"}
+
+@app.get("/api/shopping")
+async def get_shopping():
+    if os.path.exists(SHOPPING_FILE):
+        with open(SHOPPING_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+@app.post("/api/shopping")
+async def update_shopping(items: list):
+    with open(SHOPPING_FILE, "w", encoding="utf-8") as f:
+        json.dump(items, f, ensure_ascii=False, indent=2)
+    return {"status": "ok"}
 
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_panel():
